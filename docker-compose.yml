@@ -1,0 +1,72 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - ./app:/app/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: video_redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    build:
+      context: .
+    command: >
+      sh -c "poetry run celery -A app.services.background_tasks.tasks worker -l info"
+    volumes:
+      - ./app:/app/app
+    depends_on:
+      app:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+  flower:
+    build:
+      context: .
+    command: >
+      sh -c "poetry run celery -A app.services.background_tasks.tasks flower"
+    ports:
+      - "${FLOWER_PORT:-5555}:5555"
+    depends_on:
+      celery_worker:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:
