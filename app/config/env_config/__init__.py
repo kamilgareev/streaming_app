@@ -1,1 +1,1 @@
-from main import DatabaseConfig, RedisConfig
+from .main import DatabaseConfig, RedisConfig

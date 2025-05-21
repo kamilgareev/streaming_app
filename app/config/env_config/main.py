@@ -7,16 +7,18 @@ class DatabaseConfig(BaseSettings):
     PASSWORD: str
     HOST: str
     PORT: int
-    NAME: str
+    DB: str
 
     model_config = SettingsConfigDict(
         env_prefix="POSTGRES_",
-        extra="ignore"
+        extra="ignore",
+        env_file='.env'
     )
 
     @property
     def DB_URL(self) -> str:
-        return f"postgresql+asyncpg://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.NAME}"
+        return (f"postgresql+asyncpg://{self.USER}:{self.PASSWORD}@"
+                f"{self.HOST}:{self.PORT}/{self.DB}")
 
 
 class RedisConfig(BaseSettings):
@@ -26,11 +28,10 @@ class RedisConfig(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="REDIS_",
-        extra="ignore"
+        extra="ignore",
+        env_file='.env'
     )
 
     @property
     def CACHE_URL(self) -> str:
         return f"redis://{self.HOST}:{self.PORT}/{self.CACHE_DB_NUM}"
-
-
