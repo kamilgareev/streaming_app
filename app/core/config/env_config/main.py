@@ -25,6 +25,8 @@ class RedisConfig(BaseSettings):
     HOST: str
     PORT: int
     CACHE_DB_NUM: int = Field(default=0)
+    CELERY_BROKER_DB_NUM: int = Field(default=1)
+    CELERY_RESULT_BACKEND_DB_NUM: int = Field(default=2)
 
     model_config = SettingsConfigDict(
         env_prefix="REDIS_",
@@ -35,3 +37,11 @@ class RedisConfig(BaseSettings):
     @property
     def CACHE_URL(self) -> str:
         return f"redis://{self.HOST}:{self.PORT}/{self.CACHE_DB_NUM}"
+
+    @property
+    def CELERY_BROKER_URL(self) -> str:
+        return f"redis://{self.HOST}:{self.PORT}/{self.CELERY_BROKER_DB_NUM}"
+
+    @property
+    def CELERY_RESULT_BACKEND_URL(self) -> str:
+        return f"redis://{self.HOST}:{self.PORT}/{self.CELERY_RESULT_BACKEND_DB_NUM}"
