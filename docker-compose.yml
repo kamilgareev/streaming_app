@@ -1,4 +1,5 @@
 services:
+
   app:
     build:
       context: .
@@ -46,7 +47,7 @@ services:
     build:
       context: .
     command: >
-      sh -c "poetry run celery -A app.services.background_tasks.tasks worker -l info"
+      sh -c "poetry run celery -A app.core.services.background_tasks_service.tasks worker -l info"
     volumes:
       - ./app:/app/app
     depends_on:
@@ -61,7 +62,7 @@ services:
     build:
       context: .
     command: >
-      sh -c "poetry run celery -A app.services.background_tasks.tasks flower"
+      sh -c "poetry run celery -A app.core.services.background_tasks_service.tasks flower"
     ports:
       - "${FLOWER_PORT:-5555}:5555"
     depends_on:
