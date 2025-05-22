@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 
 from app.schemas.video import VideoCreate, VideoResponse
 from app.core.services.video import VideoService
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post('/', response_model=VideoResponse)
+@router.post('/', response_model=VideoResponse, status_code=status.HTTP_201_CREATED)
 async def create_video_endpoint(video: VideoCreate):
     try:
         video, playlist_url = await VideoService.create(title=video.title, url=str(video.url))
