@@ -1,7 +1,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from app.config.env_config import DatabaseConfig, RedisConfig
+from app.core.config.env_config import DatabaseConfig, RedisConfig
 
 
 class Settings(BaseSettings):
