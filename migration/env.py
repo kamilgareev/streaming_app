@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from app.core.config import settings
-from app.core.db import Base
+from app.core.db.base import Base
+from app.core.db.models import Video
 
 config = context.config
 config.set_main_option('sqlalchemy.url', settings.db.DB_URL)
